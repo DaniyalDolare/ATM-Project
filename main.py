@@ -11,12 +11,10 @@ import threading
 
 
 root = Tk()
-#root.attributes('-zoomed', True)
 root.geometry("1280x720")
-root.resizable(0,0)
+root.resizable(False,False)
 root.configure(background="#1ae8d3")
-#w, h = root.winfo_screenwidth(),root.winfo_screenheight()
-label = Label(root,text="Welcome To ATM")
+label = Label(root,text="Welcome To ATM",font="Times 20")
 label.configure(background="#1ae8d3")
 label.pack(pady=50)
 
@@ -40,83 +38,58 @@ class Atm():
     unblock_time = dt.now()
 
     def __init__(self,root):
-        btn = Button(root,text="Continue",state=ACTIVE,command=self.card_window)
+        btn = Button(root,text="Use ATM/Debit/Credit Card",state=ACTIVE,command=self.card_window)
         btn.pack(pady=20)
         Button(root,text="Use Virtual Card",command=self.vcard_window).pack(pady=10)
         root.after(1000,Audios().welcome)
 
     # create numpad
-    def numpad(self,root,row=0,column=0):
-        b1 = Button(root,text='1',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+    def numpad(self,root,row=0,column=0,command=''):
+        b1 = Button(root,text='1',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'1'))
         b1.place(x=row+0,y=column+0)
 
                 
-        b2 = Button(root,text='2',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b2 = Button(root,text='2',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'2'))
         b2.place(x=row+70,y=column+0)
 
-        b3 = Button(root,text='3',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b3 = Button(root,text='3',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'3'))
         b3.place(x=row+140,y=column+0)
 
-        b4 = Button(root,text='4',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b4 = Button(root,text='4',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'4'))
         b4.place(x=row+0,y=column+70)
 
-        b5 = Button(root,text='5',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b5 = Button(root,text='5',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'5'))
         b5.place(x=row+70,y=column+70)
 
             
-        b6 = Button(root,text='6',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b6 = Button(root,text='6',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'6'))
         b6.place(x=row+140,y=column+70)
 
-        b7 = Button(root,text='7',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b7 = Button(root,text='7',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'7'))
         b7.place(x=row+0,y=column+140)
 
-        b8 = Button(root,text='8',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b8 = Button(root,text='8',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'8'))
         b8.place(x=row+70,y=column+140)
 
                 
-        b9 = Button(root,text='9',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'))
+        b9 = Button(root,text='9',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'9'))
         b9.place(x=row+140,y=column+140)
 
 
-        b0 = Button(root,text='0',width=5,height=2,bg='SlateGray4',fg='white',font=("Times", 14,'bold'))
+        b0 = Button(root,text='0',width=5,height=2,bg='SlateGray4',fg='white',font=("Times", 14,'bold'),command = lambda:self.numpad_click(root,'0'))
         b0.place(x=row+70,y=column+210)
 
             
         
-        b = Button(root,text='CLEAR',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 13,'bold'))
+        b = Button(root,text='CLEAR',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 13,'bold'),command = lambda:self.numpad_click(root,'clear'))
         b.place(x=row+230,y=column+0)
 
-        b = Button(root,text='ENTER',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 13,'bold'))
+        b = Button(root,text='ENTER',width=5,bg='SlateGray4',fg='white',height=2,font=("Times", 13,'bold'),command = command)
         b.place(x=row+230,y=column+70)
 
-        b = Button(root,text='CANCEL',width=6,bg='SlateGray4',fg='white',height=2,font=("Times",12,'bold'))
+        b = Button(root,text='CANCEL',width=6,bg='SlateGray4',fg='white',height=2,font=("Times",12,'bold'),command = lambda:self.on_cancel(root))
         b.place(x=row+230,y=column+140)
 
-        # btn0 = Button(window,text = "0", padx=40,pady=20,command = lambda:self.numpad_click(window,'0'))
-        # btn1 = Button(window,text = "1", padx=40,pady=20,command = lambda:self.numpad_click(window,'1'))
-        # btn2 = Button(window,text = "2", padx=40,pady=20,command = lambda:self.numpad_click(window,'2'))
-        # btn3 = Button(window,text = "3", padx=40,pady=20,command = lambda:self.numpad_click(window,'3'))
-        # btn4 = Button(window,text = "4", padx=40,pady=20,command = lambda:self.numpad_click(window,'4'))
-        # btn5 = Button(window,text = "5", padx=40,pady=20,command = lambda:self.numpad_click(window,'5'))
-        # btn6 = Button(window,text = "6", padx=40,pady=20,command = lambda:self.numpad_click(window,'6'))
-        # btn7 = Button(window,text = "7", padx=40,pady=20,command = lambda:self.numpad_click(window,'7'))
-        # btn8 = Button(window,text = "8", padx=40,pady=20,command = lambda:self.numpad_click(window,'8'))
-        # btn9 = Button(window,text = "9", padx=40,pady=20,command = lambda:self.numpad_click(window,'9'))
-        # btn_delete = Button(window,text = "delete", padx=27,pady=20,command = lambda:self.numpad_click(window,'delete'))
-        # btn1_clear = Button(window,text = "clear", padx=27,pady=20,command = lambda:self.numpad_click(window,'clear'))
-        
-        # btn0.grid(row=row+3,column=column+1)
-        # btn1.grid(row=row+0,column=column+0)
-        # btn2.grid(row=row+0,column=column+1)
-        # btn3.grid(row=row+0,column=column+2)
-        # btn4.grid(row=row+1,column=column+0)
-        # btn5.grid(row=row+1,column=column+1)
-        # btn6.grid(row=row+1,column=column+2)
-        # btn7.grid(row=row+2,column=column+0)
-        # btn8.grid(row=row+2,column=column+1)
-        # btn9.grid(row=row+2,column=column+2)
-        # btn_delete.grid(row=row+3,column=column+2)
-        # btn1_clear.grid(row=row+3,column=column+0)
 
     # numpad actions
     def numpad_click(self,window,key):
@@ -130,9 +103,27 @@ class Atm():
             self.e.delete(0,END)
             self.e.insert(0,previous+key)
 
+    def on_cancel(self,window):
+        window.destroy()
+        top=Toplevel()
+        top.resizable(False,False)
+        top.geometry("1280x720")
+        top.configure(background="#1ae8d3")
+        Label(top,text="Thank you for using our ATM",font="Times 20",background="#1ae8d3").pack(pady=150)
+        top.after(6000,top.destroy)
+
+
+    def on_time_limit_succeeded(self):
+        top=Toplevel()
+        top.resizable(False,False)
+        top.geometry("1280x720")
+        top.configure(background="#1ae8d3")
+        Label(top,text="Time limit succceeded, try doing transaction again",font="Times 20",background="#1ae8d3").pack(pady=150)
+        top.after(6000,top.destroy)
 
     def vcard_window(self):
         self.top=Toplevel()
+        self.top.resizable(False,False)
         self.top.geometry("1280x720")
         self.top.configure(background="#1ae8d3")
         self.label = Label(self.top,text="Scan the QR Code",background="#1ae8d3")
@@ -142,7 +133,6 @@ class Atm():
 
     def qr_scan(self):
         text=Scanner.scan(Scanner)
-        #print('text='+text)
         if text:
             self.top.destroy()
             self.search_win(text)
@@ -154,33 +144,33 @@ class Atm():
     #window to enter card number
     def card_window(self):
         self.top = Toplevel()
+        self.top.resizable(False,False)
         self.top.geometry("1280x720")
-        # self.top.attributes('-zoomed', True)
         self.top.configure(background="#1ae8d3")
         label = Label(self.top,text="Enter your card number")
-        label.grid(row =0,column=0,pady=20,padx=100,columnspan=3)
+        label.place(x=550,y=100)
         label.configure(background="#1ae8d3")
         self.e = Entry(self.top,width=30)
-        self.e.grid(row=1,column=0,pady=20,columnspan=3)
-        Button(self.top,text="Continue",command=self.search_win).grid(row=2,column=1,pady=20)
+        self.e.place(x=520,y=200)
         self.destroyTimer(20,self.top)
-        self.numpad(self.top,row=500,column=400)
+        self.numpad(self.top,row=500,column=300,command=self.search_win)
         self.top.after(500,Audios().card_window) 
 
     #window to search user
     def search_win(self,*card):
         top1 = Toplevel()
-        top1.attributes('-zoomed', True)
+        self.top1.resizable(False,False)
+        top1.geometry("1280x720")
         top1.configure(background="#1ae8d3")
-        label = Label(top1,text="searching")
+        label = Label(top1,text="Searching..")
         label.configure(background="#1ae8d3")
         label.pack()
-        #Button(top1,text="Continue",command=Capture.click).pack()
         entered_card = card[0] if card else self.e.get()
         print(entered_card)
         self.top.destroy()
         found = self.search_user(entered_card)
         if found:
+            label.configure(text="Scan your face")
             if (self.card_state == 0 and self.unblock_time > dt.now()):
                 top1.after(3000,self.card_blocked)
                 top1.after(3000,top1.destroy)
@@ -210,7 +200,8 @@ class Atm():
 
     def not_found(self):
         top = Toplevel()
-        top.attributes('-zoomed', True)
+        top.resizable(False,False)
+        top.geometry("1280x720")
         top.configure(background="#1ae8d3")
         label = Label(top,text = 'Cannot find your details!')
         label.configure(background="#1ae8d3")
@@ -220,7 +211,8 @@ class Atm():
 
     def card_blocked(self):
         top = Toplevel()
-        top.attributes('-zoomed', True)
+        top.resizable(False,False)
+        top.geometry("1280x720")
         top.configure(background="#1ae8d3")
         label = Label(top,text = 'Your card is blocked!')
         label.configure(background="#1ae8d3")
@@ -230,16 +222,15 @@ class Atm():
     def pin_window(self,top1):  #taking top1 as argument to destroy
         top1.destroy()
         self.top2 = Toplevel()
-        #self.top2.geometry("400x300")
-        self.top2.attributes('-zoomed', True)
+        self.top2.resizable(False,False)
+        self.top2.geometry("1280x720")
         self.top2.configure(background="#1ae8d3")
         label = Label(self.top2,text="Enter your pin")
-        label.grid(row=0,column=0,columnspan=3,pady=20)
+        label.place(x=580,y=100)
         label.configure(background="#1ae8d3")
         self.e = Entry(self.top2,width=30)
-        self.e.grid(row=1,column=0,columnspan=3,pady=20)
-        Button(self.top2,text="Continue",command=self.check_pin).grid(row=2,column=1)
-        self.numpad(self.top2,row=3)
+        self.e.place(x=520,y=200)
+        self.numpad(self.top2,row=500,column=300,command=self.check_pin)
         self.destroyTimer(20,self.top2)
 
 
@@ -264,19 +255,20 @@ class Atm():
 
     def wrong_pin(self):
         self.top2 = Toplevel()
-        #self.top2.geometry("400x300")
-        self.top2.attributes('-zoomed', True)
+        self.top2.resizable(False,False)
+        self.top2.geometry("1280x720")
         self.top2.configure(background="#1ae8d3")
         label = Label(self.top2,text="Entered wrong pin...")
-        label.grid(row=0,column=0,columnspan=3,pady=20)
+        label.pack()
         label.configure(background="#1ae8d3")
         self.destroyTimer(5,self.top2)
 
             
     def destroyTimer(self,time,window):
-        print("time remaining",time)
+        # print("time remaining",time)
         if time==0:
             window.destroy()
+            self.on_time_limit_succeeded()
             return
         window.after(1000,self.destroyTimer,time-1,window)
 
@@ -356,164 +348,162 @@ class Atm():
 
     def menu(self):
         self.top4 = Toplevel()
-        self.top4.attributes('-zoomed', True)
+        self.top4.resizable(False,False)
         self.top4.configure(background="#1ae8d3")
         self.top4.geometry("1280x720")
-        btn1 = Button(self.top4,text="Withdraw",command=self.withdraw_win)
-        btn2 = Button(self.top4,text="Deposit",command=self.deposit_win)
-        btn3 = Button(self.top4,text="Change Pin",command=self.change_pin1)
-        btn4 = Button(self.top4,text="Check Balance",command=self.check_balance)
-        Button(self.top4,text="last 5 transaction",command=self.transaction_info).grid(row=4,column=0)
+        label = Label(self.top4,text="Select your choice",background="#1ae8d3",font = "Times 20")
+        btn1 = Button(self.top4,text="Withdraw",font = "Times 20",height=2,width=12,command=self.withdraw_win)
+        btn2 = Button(self.top4,text="Deposit",font = "Times 20",height=2,width=12,command=self.deposit_win)
+        btn3 = Button(self.top4,text="Change Pin",font = "Times 20",height=2,width=12,command=self.change_pin1)
+        btn4 = Button(self.top4,text="Check Balance",font = "Times 20",height=2,width=12,command=self.check_balance)
+        btn5 = Button(self.top4,text="Mini Statement",font = "Times 20",height=2,width=12,command=self.transaction_info)
 
-        btn1.grid(row= 0,column=0)
-        btn2.grid(row= 1,column=0)
-        btn3.grid(row= 2,column=0)
-        btn4.grid(row= 3,column=0)
+        label.place(x=540,y=50)
+        btn1.place(x=50,y=150)
+        btn2.place(x=50,y=300)
+        btn3.place(x=50,y=450)
+        btn4.place(x=1050,y=150)
+        btn5.place(x=1050,y=300)
 
-        self.destroyTimer(20,self.top4)            
+        self.destroyTimer(20,self.top4)
 
-    def withdraw_check(self):
-        self.withdraw_amount = float(self.e.get())
-        self.top8.destroy()
-        if self.withdraw_amount < self.balance :
-            self.edit_balance("withdraw")
-            top = Toplevel()
-            top.geometry("400x300")
-            top.configure(background="#1ae8d3")
-            label = Label(top,text="Successful")
-            label.configure(background="#1ae8d3")
-            label.pack()
-            self.destroyTimer(6,top)
-        else:
-            top = Toplevel()
-            top.geometry("400x300")
-            top.configure(background="#1ae8d3")
-            label = Label(top,text="Insufficient balance")
-            label.configure(background="#1ae8d3")
-            label.pack()
-            self.destroyTimer(6,top)
 
     def withdraw_win(self):
         self.top4.destroy()
         self.top8 = Toplevel()
-        #self.top8.geometry("400x300")
-        self.top8.attributes('-zoomed', True)
+        self.top8.resizable(False,False)
+        self.top8.geometry("1280x720")
         self.top8.configure(background="#1ae8d3")
         label = Label(self.top8,text="Enter the amount in rupees")
         label.configure(background="#1ae8d3")
-        label.grid(row=0,column=0,columnspan=3)
+        label.place(x=550,y=100)
         self.e =Entry(self.top8,width=30)
-        self.e.grid(row=1,column=0,columnspan=3) 
-        btn = Button(self.top8,text="Continue",command=self.withdraw_check)
-        btn.grid(row=2,column=1)
-        self.numpad(self.top8,row=3)
+        self.e.place(x=510,y=200)
+        self.numpad(self.top8,row=500,column=300,command=self.withdraw_check)
         self.destroyTimer(20,self.top8)
 
-    def deposit_check(self):
-        self.deposit_amount = float(self.entry5.get())
-        self.top9.destroy()
-        self.edit_balance("deposit")
+    def withdraw_check(self):
+        self.withdraw_amount = float(self.e.get())
+        self.top8.destroy()
         top = Toplevel()
-        top.geometry("400x300")
+        top.resizable(False,False)
+        top.geometry("1280x720")
         top.configure(background="#1ae8d3")
-        label = Label(top,text="Successful")
-        label.configure(background="#1ae8d3")
-        label.pack()
-        self.destroyTimer(6,top)
+        label = Label(top,background="#1ae8d3",text="Successful",font="Times 20")
+        label.pack(pady=150)
+        if self.withdraw_amount < self.balance :
+            self.edit_balance("withdraw")
+            label.configure(text="Successful")    
+        else:
+            label.configure(text="Insufficient balance")
+        top.after(6000,top.destroy)
 
 
     def deposit_win(self):
         self.top4.destroy()
         self.top9 = Toplevel()
-        self.top9.geometry("400x300")
+        self.top9.resizable(False,False)
+        self.top9.geometry("1280x720")
         self.top9.configure(background="#1ae8d3")
-        label = Label(self.top9,text="Enter the amount to deposit in rupees")
-        label.configure(background="#1ae8d3")
-        label.pack()
-        self.entry5 =Entry(self.top9,width=30)
-        self.entry5.pack() 
-        btn = Button(self.top9,text="Continue",command=self.deposit_check)
-        btn.pack()
+        label = Label(self.top9,text="Enter the amount to deposit in rupees",background="#1ae8d3")
+        label.place(x=510,y=100)
+        self.e =Entry(self.top9,width=30)
+        self.e.place(x=510,y=200)
+        self.numpad(self.top9,row=500,column=300,command=self.deposit_check)
         self.destroyTimer(20,self.top9)
+
+    def deposit_check(self):
+        self.deposit_amount = float(self.e.get())
+        self.top9.destroy()
+        self.edit_balance("deposit")
+        top = Toplevel()
+        top.resizable(False,False)
+        top.geometry("1280x720")
+        top.configure(background="#1ae8d3")
+        label = Label(top,text="Successful",font="Times 20")
+        label.configure(background="#1ae8d3")
+        label.pack(pady=150)
+        top.after(6000,top.destroy)
+
 
     def change_pin1(self):
         self.top4.destroy()
         self.top6 = Toplevel()
-        self.top6.geometry("400x300")
+        self.top6.resizable(False,False)
+        self.top6.geometry("1280x720")
         self.top6.configure(background="#1ae8d3")
         label = Label(self.top6,text="Enter your current pin")
         label.configure(background="#1ae8d3")
-        label.pack()
-        self.entry1 = Entry(self.top6,width=20)
-        self.entry1.pack()
-        btn = Button(self.top6,text="Continue",command=self.change_pin2)
-        btn.pack()
+        label.place(x=560,y=100)
+        self.e = Entry(self.top6,width=30)
+        self.e.place(x=520,y=200)
+        self.numpad(self.top6,row=500,column=300,command=self.change_pin2)
+        self.destroyTimer(20,self.top6)
+
 
     def change_pin2(self):
-        print(self.pin)
-        if (int(self.entry1.get()) == self.pin):
-            self.top6.destroy()
-            self.top7 = Toplevel()
-            self.top7.geometry("400x300")
-            self.top7.configure(background="#1ae8d3")
-            label = Label(self.top7,text="Enter new pin")
+        entered_pin=int(self.e.get())
+        self.top6.destroy()
+        self.top=Toplevel()
+        self.top.resizable(False,False)
+        self.top.geometry("1280x720")
+        self.top.configure(background="#1ae8d3")
+        if (entered_pin == self.pin):
+            label = Label(self.top,text="Enter new pin")
             label.configure(background="#1ae8d3")
-            label.pack()
-            self.entry3 = Entry(self.top7,width=20)
-            self.entry3.pack()
-            btn = Button(self.top7,text="Continue",command=self.change_pin3)
-            btn.pack()
-            self.destroyTimer(20,self.top7)
+            label.place(x=580,y=100)
+            self.e = Entry(self.top,width=30)
+            self.e.place(x=520,y=200)
+            self.numpad(self.top,row=500,column=300,command=self.change_pin3)
+            self.destroyTimer(20,self.top)
         else:
-            self.top6.destroy()
-            top = Toplevel()
-            top.geometry("400x300")
-            top.configure(background="#1ae8d3")
-            label = Label(top,text="Wrong pin")
-            label.configure(background="#1ae8d3")
-            label.pack()
-            self.destroyTimer(6,top)
+            label = Label(self.top,text="Wrong pin",font="Times 20",background="#1ae8d3")
+            label.pack(pady=150)
+            self.top.after(6000,self.top.destroy)
 
     def change_pin3(self):
-        new_pin = int(self.entry3.get())
-        self.top7.destroy()
+        new_pin = int(self.e.get())
+        self.top.destroy()
         print(new_pin)
         self.pin = new_pin
         self.edit_balance("pin")
         top = Toplevel()
-        top.geometry("400x300")
+        top.resizable(False,False)
+        top.geometry("1280x720")
         top.configure(background="#1ae8d3")
-        label = Label(top,text="Pin changed successful")
-        label.configure(background="#1ae8d3")
-        label.pack()
-        self.destroyTimer(6,top)
+        label = Label(top,text="Pin changed successful",font="Times 20",background="#1ae8d3")
+        label.pack(pady=150)
+        top.after(6000,top.destroy)
         
 
     def check_balance(self):
         self.top4.destroy()
         self.edit_balance("check balance")
         top5 = Toplevel()
-        top5.geometry("400x300")
+        top5.resizable(False,False)
+        top5.geometry("1280x720")
         top5.configure(background="#1ae8d3")
-        label = Label(top5,text=self.balance)
+        label = Label(top5,text="Your current balance is "+str(self.balance),font="Times 20")
         label.configure(background="#1ae8d3")
-        label.pack()
-        self.destroyTimer(10,top5)
+        label.pack(pady=150)
+        top5.after(10000,top5.destroy)
 
 
     def transaction_info(self):
         details = list(self.cur.execute('SELECT trans,amount,balance,datetime FROM Trans WHERE account_id=? ORDER BY id DESC LIMIT ?',(self.account_id,5)))
         self.top4.destroy()
         top = Toplevel()
+        top.resizable(False,False)
         top.geometry("1280x720")
+        top.configure(background="#1ae8d3")
         title = ('Date','Time','Transaction ',' Amount ',' Balance')
         for i in range(5):
-            Label(top,text=title[i]).grid(row=0,column=i)
+            Label(top,text=title[i],background="#1ae8d3",font="Times 20").grid(row=0,column=i)
         for i in range(len(details),0,-1):
             trans,amount,balance,datetime = details[i-1]
             text=(str(datetime).split(' ')[0]+' ',str(datetime).split(' ')[1],trans,str(amount),str(balance))
             for j in range(5):
-                Label(top,text=text[j]).grid(row=i+1,column=j)
+                Label(top,text=text[j],background="#1ae8d3",font="Times 20").grid(row=i+1,column=j)
         top.after(10000,top.destroy)
 
 atm = Atm(root)
