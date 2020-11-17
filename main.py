@@ -159,10 +159,10 @@ class Atm():
     #window to search user
     def search_win(self,*card):
         top1 = Toplevel()
-        self.top1.resizable(False,False)
+        top1.resizable(False,False)
         top1.geometry("1280x720")
         top1.configure(background="#1ae8d3")
-        label = Label(top1,text="Searching..")
+        label = Label(top1,text="Searching..",font='Times 20')
         label.configure(background="#1ae8d3")
         label.pack()
         entered_card = card[0] if card else self.e.get()
@@ -170,14 +170,14 @@ class Atm():
         self.top.destroy()
         found = self.search_user(entered_card)
         if found:
-            label.configure(text="Scan your face")
             if (self.card_state == 0 and self.unblock_time > dt.now()):
                 top1.after(3000,self.card_blocked)
                 top1.after(3000,top1.destroy)
                 self.conn.commit()
-            elif (self.card_state == 0):
-                self.edit_balance('unblock')
             elif found:
+                if (self.card_state == 0):
+                    self.edit_balance('unblock')
+                label.configure(text="Scan your face")
                 print("found")
                 top1.after(100,self.cam,top1,label)
                 print('opening camera')
@@ -186,6 +186,7 @@ class Atm():
             top1.after(1000,self.not_found)
             top1.after(3000,top1.destroy)
             self.conn.commit()
+        top1.after(20000,top1.destroy)
 
     def cam(self,top1,label):
         Capture.capture(Capture)
@@ -214,10 +215,10 @@ class Atm():
         top.resizable(False,False)
         top.geometry("1280x720")
         top.configure(background="#1ae8d3")
-        label = Label(top,text = 'Your card is blocked!')
+        label = Label(top,text = 'Your card is blocked!',font='Times 20')
         label.configure(background="#1ae8d3")
-        label.pack()
-        self.destroyTimer(6,top)           
+        label.pack(pady=150)
+        top.after(6000,top.destroy)         
 
     def pin_window(self,top1):  #taking top1 as argument to destroy
         top1.destroy()
@@ -258,10 +259,10 @@ class Atm():
         self.top2.resizable(False,False)
         self.top2.geometry("1280x720")
         self.top2.configure(background="#1ae8d3")
-        label = Label(self.top2,text="Entered wrong pin...")
-        label.pack()
+        label = Label(self.top2,text="Entered wrong pin...",font='Times 20')
+        label.pack(pady=150)
         label.configure(background="#1ae8d3")
-        self.destroyTimer(5,self.top2)
+        self.top2.after(5000,self.top2.destroy)
 
             
     def destroyTimer(self,time,window):
