@@ -1,5 +1,6 @@
 from datetime import datetime as dt, timedelta
 from tkinter import *
+from tkinter import messagebox
 import os
 import sqlite3
 from face_cap import Capture
@@ -28,7 +29,6 @@ class Audios():
 
 class Atm():
        
-    row_num = 0
     entered_card = ''
     entered_pin = 0
     pin = 0
@@ -114,6 +114,7 @@ class Atm():
 
 
     def on_time_limit_succeeded(self):
+        print("Times up")
         top=Toplevel()
         top.resizable(False,False)
         top.geometry("1280x720")
@@ -178,6 +179,7 @@ class Atm():
                 if (self.card_state == 0):
                     self.edit_balance('unblock')
                 label.configure(text="Scan your face")
+                # messagebox.showinfo('OPENING CAMERA','INSTRUCTIONS \n1.REMOVE MASK OR ANY OTHER ACCECERIES \n2.PLACE YOUR FACE PROPERLY BEFORE THE CAMERA\n3.WAIT FOR FEW SECONDS')
                 print("found")
                 top1.after(100,self.cam,top1,label)
                 print('opening camera')
@@ -187,6 +189,7 @@ class Atm():
             top1.after(3000,top1.destroy)
             self.conn.commit()
         top1.after(20000,top1.destroy)
+
 
     def cam(self,top1,label):
         Capture.capture(Capture)
@@ -204,10 +207,10 @@ class Atm():
         top.resizable(False,False)
         top.geometry("1280x720")
         top.configure(background="#1ae8d3")
-        label = Label(top,text = 'Cannot find your details!')
+        label = Label(top,text = 'Card not found!',font="Times 20")
         label.configure(background="#1ae8d3")
-        label.pack()
-        self.destroyTimer(6,top)
+        label.pack(pady=150)
+        top.after(6000,top.destroy)
 
 
     def card_blocked(self):
@@ -231,22 +234,22 @@ class Atm():
         label.configure(background="#1ae8d3")
         self.e = Entry(self.top2,width=30)
         self.e.place(x=520,y=200)
-        self.numpad(self.top2,row=500,column=300,command=self.check_pin)
         self.destroyTimer(20,self.top2)
+        self.numpad(self.top2,row=500,column=300,command=self.check_pin)
+        
 
 
     def check_pin(self):
         entered_pin = self.e.get()
+        self.top2.destroy()
         print(self.pin)
         print(entered_pin)
         if (int(entered_pin)== self.pin):
             print("pin verified")
-            self.top2.destroy()
             self.menu()
         else:
             self.pin_count-=1
             self.edit_balance("pin_count") 
-            self.top2.destroy()
             if self.pin_count==0:
                 self.card_blocked()
                 self.edit_balance('block')#edit card state to 0
@@ -266,7 +269,7 @@ class Atm():
 
             
     def destroyTimer(self,time,window):
-        # print("time remaining",time)
+        print("time remaining",time)
         if time==0:
             window.destroy()
             self.on_time_limit_succeeded()
@@ -299,37 +302,39 @@ class Atm():
 
     def edit_balance(self,*detail):  
         print("in edit")
-        self.cur.execute("SELECT email FROM Personal JOIN Account ON Personal.id=Account.personal_id WHERE Account.id=?",(self.account_id,))
-        email=self.cur.fetchone()[0] 
+        self.cur.execute("SELECT email,account_no FROM Personal JOIN Account ON Personal.id=Account.personal_id WHERE Account.id=?",(self.account_id,))
+        email,account_no=self.cur.fetchone()
         try:
             if detail[0]=="pin_count":
                 self.cur.execute('UPDATE Card SET pin_count=? WHERE account_id=?',(self.pin_count,self.account_id))
                 print('pincount updated')
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"wrong pin")).start()
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"wrong pin",account_no)).start()
             if detail[0] == 'unblock':
                 self.cur.execute('UPDATE Card SET card_state=?,pin_count=? WHERE account_id=?',(1,3,self.account_id))
             if detail[0] == 'block':
                 self.cur.execute('UPDATE Card SET card_state=?,unblock_time=? WHERE account_id=?',(0,dt.now()+ timedelta(hours=24),self.account_id))
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"block")).start()
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"block",account_no)).start()
                 print("blocked on ", dt.now())
             if detail[0]=="pin":
                 print("in pin")
                 self.cur.execute('UPDATE Card SET pin=? WHERE account_id=?',(self.pin,self.account_id))   
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"pin")).start()            
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"pin",account_no)).start()            
             if detail[0] == "withdraw":
                 self.balance = self.balance - self.withdraw_amount
                 self.cur.execute('UPDATE Account SET balance=? WHERE id=?',(self.balance,self.account_id))
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"withdraw",self.withdraw_amount)).start()
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"withdraw",account_no,self.withdraw_amount)).start()
                 self.add_trans("withdraw")
             if detail[0] =="deposit":
                 self.balance = self.balance + self.deposit_amount
                 self.cur.execute('UPDATE Account SET balance=? WHERE id=?',(self.balance,self.account_id))
                 self.add_trans("deposit")
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"deposit",self.deposit_amount)).start()
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"deposit",account_no,self.deposit_amount)).start()
             if detail[0] == "check balance":
-                threading.Thread(target=Mailer.mail,args=(Mailer,email,"check balance")).start()
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"check balance",account_no,self.balance)).start()
+            if detail[0] == "mini statement":
+                threading.Thread(target=Mailer.mail,args=(Mailer,email,"mini statement",account_no,detail[1])).start()
         except:
-            pass
+            print('No internet!')
 
         self.conn.commit()
 
@@ -357,7 +362,7 @@ class Atm():
         btn2 = Button(self.top4,text="Deposit",font = "Times 20",height=2,width=12,command=self.deposit_win)
         btn3 = Button(self.top4,text="Change Pin",font = "Times 20",height=2,width=12,command=self.change_pin1)
         btn4 = Button(self.top4,text="Check Balance",font = "Times 20",height=2,width=12,command=self.check_balance)
-        btn5 = Button(self.top4,text="Mini Statement",font = "Times 20",height=2,width=12,command=self.transaction_info)
+        btn5 = Button(self.top4,text="Mini Statement",font = "Times 20",height=2,width=12,command=self.mini_statement)
 
         label.place(x=540,y=50)
         btn1.place(x=50,y=150)
@@ -490,8 +495,13 @@ class Atm():
         top5.after(10000,top5.destroy)
 
 
-    def transaction_info(self):
+    def mini_statement(self):
         details = list(self.cur.execute('SELECT trans,amount,balance,datetime FROM Trans WHERE account_id=? ORDER BY id DESC LIMIT ?',(self.account_id,5)))
+        data=[]
+        data.append(["Date","Time","Transaction","Amount","Balance"])
+        for i in range(len(details),0,-1):
+            trans,amount,balance,datetime = details[i-1]
+            data.append([str(datetime).split(' ')[0],str(datetime).split(' ')[1],trans,str(amount),str(balance)])
         self.top4.destroy()
         top = Toplevel()
         top.resizable(False,False)
@@ -505,6 +515,7 @@ class Atm():
             text=(str(datetime).split(' ')[0]+' ',str(datetime).split(' ')[1],trans,str(amount),str(balance))
             for j in range(5):
                 Label(top,text=text[j],background="#1ae8d3",font="Times 20").grid(row=i+1,column=j)
+        self.edit_balance("mini statement",data)
         top.after(10000,top.destroy)
 
 atm = Atm(root)
